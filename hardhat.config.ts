@@ -5,16 +5,25 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.20",
+  solidity: {
+    version: "0.8.20",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 1000
+      },
+      viaIR: true
+    }
+  },
   networks: {
     sepolia: {
-      url: process.env.SEPOLIA_URL || "https://sepolia.infura.io/v3/YOUR-PROJECT-ID",
+      url: process.env.SEPOLIA_URL || "",
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-    },
-  },
-  paths: {
-    artifacts: "./frontend/src/artifacts",
-  },
+      gasPrice: "auto",
+      gas: 2000000,
+      gasMultiplier: 1
+    }
+  }
 };
 
 export default config;

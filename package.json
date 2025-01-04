@@ -12,7 +12,12 @@
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "@openzeppelin/contracts": "^5.1.0",
+    "@types/node-fetch": "^2.6.12",
     "dotenv": "^16.4.7",
+    "erc721a": "^4.3.0",
     "hardhat": "^2.22.17"
+  },
+  "dependencies": {
+    "web3.storage": "^4.5.5"
   }
 }

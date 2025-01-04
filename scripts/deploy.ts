@@ -1,13 +1,17 @@
 import { ethers } from "hardhat";
 
 async function main() {
-  const baseURI = "https://your-metadata-server.com/metadata/"; // Replace with your metadata server
+  const [deployer] = await ethers.getSigners();
+  console.log("Deploying contracts with the account:", deployer.address);
 
   const ScottNFT = await ethers.getContractFactory("ScottNFT");
-  const nft = await ScottNFT.deploy(baseURI);
-  await nft.waitForDeployment();
+  const scottNFT = await ScottNFT.deploy();
 
-  console.log(`ScottNFT deployed to: ${await nft.getAddress()}`);
+  await scottNFT.waitForDeployment();
+  const contractAddress = await scottNFT.getAddress();
+
+  console.log("ScottNFT deployed to:", contractAddress);
+  console.log("Deployment completed!");
 }
 
 main()

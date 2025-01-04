@@ -1,48 +1,39 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "erc721a/contracts/ERC721A.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract ScottNFT is ERC721, ERC721URIStorage, Ownable {
-    uint256 private _nextTokenId;
-    string private _baseTokenURI;
+contract ScottNFT is ERC721A, Ownable {
+    string private constant BASE_URI = "ipfs://Qmc7p1nVDaaJ7ZSqji4bwtKn65Mm76TPE5kYXhH1uuxe2A";
+    uint256 public constant MAX_SUPPLY = 1000;
 
-    constructor(string memory baseURI) ERC721("ScottNFT", "SCOTT") Ownable(msg.sender) {
-        _baseTokenURI = baseURI;
+    event NFTMinted(address indexed owner, uint256 quantity);
+
+    constructor() ERC721A("ScottNFT", "SCOTT") Ownable(msg.sender) {}
+
+    function safeMint(uint256 quantity) public onlyOwner {
+        require(quantity > 0, "Quantity must be greater than 0");
+        require(totalSupply() + quantity <= MAX_SUPPLY, "Would exceed max supply");
+        _mint(msg.sender, quantity);
+        emit NFTMinted(msg.sender, quantity);
     }
 
-    function _baseURI() internal view override returns (string memory) {
-        return _baseTokenURI;
+    function _baseURI() internal pure override returns (string memory) {
+        return BASE_URI;
     }
 
-    function setBaseURI(string memory baseURI) public onlyOwner {
-        _baseTokenURI = baseURI;
-    }
-
-    function safeMint(address to, string memory uri) public onlyOwner {
-        uint256 tokenId = _nextTokenId++;
-        _safeMint(to, tokenId);
-        _setTokenURI(tokenId, uri);
-    }
-
-    // Override required functions
     function tokenURI(uint256 tokenId)
         public
         view
-        override(ERC721, ERC721URIStorage)
+        override(ERC721A)
         returns (string memory)
     {
-        return super.tokenURI(tokenId);
+        require(_exists(tokenId), "Token does not exist");
+        return BASE_URI;
     }
 
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC721, ERC721URIStorage)
-        returns (bool)
-    {
-        return super.supportsInterface(interfaceId);
+    function totalSupply() public view override returns (uint256) {
+        return _totalMinted();
     }
-} 
+}
